@@ -1,0 +1,2036 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyNOolQSWdM/b8HO3InWnimb",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/ehlatham/PUS2022_ELathamGray/blob/main/HW3/PhillyParks_Analysis\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 97,
+      "metadata": {
+        "id": "YGe-Ka0ko6Yw"
+      },
+      "outputs": [],
+      "source": [
+        "import pandas as pd\n",
+        "pparks = pd.read_csv(\"http://data-phl.opendata.arcgis.com/datasets/d52445160ab14380a673e5849203eb64_0.csv\")\n",
+        "pparks_top517 = pparks.head()"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pparks.info()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "ERRORLSxOknJ",
+        "outputId": "da612175-d336-4443-da32-71edb417c8d0"
+      },
+      "execution_count": 75,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "<class 'pandas.core.frame.DataFrame'>\n",
+            "RangeIndex: 517 entries, 0 to 516\n",
+            "Data columns (total 25 columns):\n",
+            " #   Column                   Non-Null Count  Dtype  \n",
+            "---  ------                   --------------  -----  \n",
+            " 0   OBJECTID                 517 non-null    int64  \n",
+            " 1   PUBLIC_NAME              517 non-null    object \n",
+            " 2   PARENT_NAME              517 non-null    object \n",
+            " 3   NESTED                   517 non-null    object \n",
+            " 4   OFFICIAL_NAME            287 non-null    object \n",
+            " 5   LABEL                    515 non-null    object \n",
+            " 6   ALIAS                    356 non-null    object \n",
+            " 7   DPP_ASSET_ID             517 non-null    int64  \n",
+            " 8   ADDRESS_911              514 non-null    object \n",
+            " 9   ZIP_CODE                 517 non-null    int64  \n",
+            " 10  ADDRESS_BRT              433 non-null    object \n",
+            " 11  ALIAS_ADDRESS            431 non-null    object \n",
+            " 12  ACREAGE                  517 non-null    float64\n",
+            " 13  PROPERTY_CLASSIFICATION  517 non-null    object \n",
+            " 14  PPR_USE                  517 non-null    object \n",
+            " 15  PPR_DISTRICT             517 non-null    int64  \n",
+            " 16  PPR_OPS_DISTRICT         517 non-null    object \n",
+            " 17  COUNCIL_DISTRICT         516 non-null    object \n",
+            " 18  POLICE_DISTRICT          516 non-null    object \n",
+            " 19  CITY_SCALE_MAPS          517 non-null    object \n",
+            " 20  LOCAL_SCALE_MAPS         517 non-null    object \n",
+            " 21  PROGRAM_SITES            517 non-null    object \n",
+            " 22  COMMENTS                 146 non-null    object \n",
+            " 23  Shape__Area              517 non-null    float64\n",
+            " 24  Shape__Length            517 non-null    float64\n",
+            "dtypes: float64(3), int64(4), object(18)\n",
+            "memory usage: 101.1+ KB\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "I'm confused as to why this pparks.info looks different than the one below"
+      ],
+      "metadata": {
+        "id": "x4ib2IHoGZjg"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pparks.shape"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "S-59WDh-h1OE",
+        "outputId": "e2d10569-9b93-4c0f-84d7-f1adc925b73e"
+      },
+      "execution_count": 74,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "(517, 25)"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 74
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pparks.info"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "FYOcyAoMbUN-",
+        "outputId": "10022cd5-8635-4bfe-bfc6-c99489ec217c"
+      },
+      "execution_count": 65,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "<bound method DataFrame.info of      OBJECTID                                     PUBLIC_NAME  \\\n",
+              "0           1  William H (Billy) Markward Memorial Playground   \n",
+              "1           2                                Schuylkill Banks   \n",
+              "2           3                           Schuylkill River Park   \n",
+              "3           4                           Frankford Boat Launch   \n",
+              "4           5                            Orthodox Street Park   \n",
+              "..        ...                                             ...   \n",
+              "512       513        Officer Robert Hayes Memorial Playground   \n",
+              "513       514                       Benjamin Franklin Parkway   \n",
+              "514       515                          Winter Street Greenway   \n",
+              "515       516                       61st and Cobbs Creek Park   \n",
+              "516       517                       Lawrence Court Breezeways   \n",
+              "\n",
+              "                                  PARENT_NAME NESTED  \\\n",
+              "0                       Schuylkill River Park      Y   \n",
+              "1                            Schuylkill Banks      N   \n",
+              "2                       Schuylkill River Park      N   \n",
+              "3                       Frankford Boat Launch      N   \n",
+              "4                        Orthodox Street Park      N   \n",
+              "..                                        ...    ...   \n",
+              "512  Officer Robert Hayes Memorial Playground      N   \n",
+              "513                 Benjamin Franklin Parkway      N   \n",
+              "514                 Benjamin Franklin Parkway      Y   \n",
+              "515                          Cobbs Creek Park      Y   \n",
+              "516                 Lawrence Court Breezeways      N   \n",
+              "\n",
+              "                                       OFFICIAL_NAME                   LABEL  \\\n",
+              "0    William H. (Billy) Markward Memorial Playground               Markward    \n",
+              "1                                                NaN        Schuylkill Banks   \n",
+              "2                                                NaN   Schuylkill River Park   \n",
+              "3                              Frankford Boat Launch        Frankford Launch   \n",
+              "4                                                NaN                Orthodox   \n",
+              "..                                               ...                     ...   \n",
+              "512         Officer Robert Hayes Memorial Playground                   Hayes   \n",
+              "513                        Benjamin Franklin Parkway  Benjamin Franklin Pkwy   \n",
+              "514                                              NaN         Winter Greenway   \n",
+              "515                                              NaN    61st and Cobbs Creek   \n",
+              "516                                              NaN      Lawrence Breezeway   \n",
+              "\n",
+              "                                                 ALIAS  DPP_ASSET_ID  \\\n",
+              "0                                                  NaN          1903   \n",
+              "1                                Schuylkill River Park          2794   \n",
+              "2                                                  NaN          2992   \n",
+              "3         PA Fish & Boat;Frankford Arsenal Boat Launch          3090   \n",
+              "4    Orthodox Street Parcel; Bridesburg Riverfront ...          3091   \n",
+              "..                                                 ...           ...   \n",
+              "512                              Swenson Park, Conwell          1923   \n",
+              "513                                        The Parkway          1226   \n",
+              "514  Rob Stuart Memorial Dog Park; Winter Street Gr...             0   \n",
+              "515                                                             3481   \n",
+              "516                            Lawrence Court Walkways          3867   \n",
+              "\n",
+              "            ADDRESS_911  ZIP_CODE  ... PPR_DISTRICT PPR_OPS_DISTRICT  \\\n",
+              "0        400 S TANEY ST     19146  ...            7             5, 7   \n",
+              "1        400 S TANEY ST     19103  ...            7             5, 7   \n",
+              "2        400 S TANEY ST     19146  ...            7             5, 7   \n",
+              "3        5625 TACONY ST     19137  ...            2                2   \n",
+              "4      3101 ORTHODOX ST     19137  ...            5                2   \n",
+              "..                  ...       ...  ...          ...              ...   \n",
+              "512   9949 PRESIDENT ST     19115  ...            1                1   \n",
+              "513   BENJ FRANKLIN PKY         0  ...            7                5   \n",
+              "514   BENJ FRANKLIN PKY         0  ...            7                5   \n",
+              "515  61ST & COBBS CREEK     19143  ...            8                8   \n",
+              "516     335 LAWRENCE CT     19106  ...           10                5   \n",
+              "\n",
+              "     COUNCIL_DISTRICT POLICE_DISTRICT CITY_SCALE_MAPS  LOCAL_SCALE_MAPS  \\\n",
+              "0                   2               9               Y                 Y   \n",
+              "1                2, 5           9, 17               Y                 Y   \n",
+              "2                   2               9               Y                 Y   \n",
+              "3                   6              15               Y                 Y   \n",
+              "4                   6              15               N                 N   \n",
+              "..                ...             ...             ...               ...   \n",
+              "512                10               7               Y                 Y   \n",
+              "513                 5               9               Y                 Y   \n",
+              "514                 5               9               N                 Y   \n",
+              "515                 3              18               Y                 Y   \n",
+              "516                 1               6               N                 Y   \n",
+              "\n",
+              "    PROGRAM_SITES                                           COMMENTS  \\\n",
+              "0               Y                                                NaN   \n",
+              "1               N    Bill 160113 (4/14/16) -South of South St Bridge   \n",
+              "2               N                                                NaN   \n",
+              "3               N                                                NaN   \n",
+              "4               N  Officially acquired from PAID in 10/2019. Doc ...   \n",
+              "..            ...                                                ...   \n",
+              "512             Y                                                NaN   \n",
+              "513             N  22nd and Hamilton 'wedge' added (Street Legal ...   \n",
+              "514             N  Named in 2021. Winter (21st-22nd) has a dog pa...   \n",
+              "515             Y                                                NaN   \n",
+              "516             N                                                NaN   \n",
+              "\n",
+              "       Shape__Area Shape__Length  \n",
+              "0     23295.664062    892.868012  \n",
+              "1    101477.171875   9300.670275  \n",
+              "2     27216.929688    799.048584  \n",
+              "3     78515.335938   1585.376114  \n",
+              "4     72926.187500   1304.901416  \n",
+              "..             ...           ...  \n",
+              "512  139660.027344   1698.902277  \n",
+              "513  103066.453125   9195.466911  \n",
+              "514    5386.812500    679.857371  \n",
+              "515   35596.937500   1037.395645  \n",
+              "516    1945.863281    394.259401  \n",
+              "\n",
+              "[517 rows x 25 columns]>"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 65
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "list(pparks.columns)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "LnZQt28kb4PJ",
+        "outputId": "816fb102-997b-4545-b591-879ca6d96c5b"
+      },
+      "execution_count": 73,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "['OBJECTID',\n",
+              " 'PUBLIC_NAME',\n",
+              " 'PARENT_NAME',\n",
+              " 'NESTED',\n",
+              " 'OFFICIAL_NAME',\n",
+              " 'LABEL',\n",
+              " 'ALIAS',\n",
+              " 'DPP_ASSET_ID',\n",
+              " 'ADDRESS_911',\n",
+              " 'ZIP_CODE',\n",
+              " 'ADDRESS_BRT',\n",
+              " 'ALIAS_ADDRESS',\n",
+              " 'ACREAGE',\n",
+              " 'PROPERTY_CLASSIFICATION',\n",
+              " 'PPR_USE',\n",
+              " 'PPR_DISTRICT',\n",
+              " 'PPR_OPS_DISTRICT',\n",
+              " 'COUNCIL_DISTRICT',\n",
+              " 'POLICE_DISTRICT',\n",
+              " 'CITY_SCALE_MAPS',\n",
+              " 'LOCAL_SCALE_MAPS',\n",
+              " 'PROGRAM_SITES',\n",
+              " 'COMMENTS',\n",
+              " 'Shape__Area',\n",
+              " 'Shape__Length']"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 73
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "It looked like from the instructions, I may be wrong, but that \"Index\" was supposed to show up. The way I found gave the list of columns, I hope that's ok. "
+      ],
+      "metadata": {
+        "id": "A9Mqi7eDSwTr"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pparks.describe()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 300
+        },
+        "id": "Jbbrd3eFOrEw",
+        "outputId": "213f6477-cbe8-42e4-c4fd-814adaf8eac7"
+      },
+      "execution_count": 67,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "         OBJECTID  DPP_ASSET_ID      ZIP_CODE      ACREAGE  PPR_DISTRICT  \\\n",
+              "count  517.000000    517.000000    517.000000   517.000000    517.000000   \n",
+              "mean   259.000000   2491.276596  19057.479691    19.619205      5.841393   \n",
+              "std    149.389312   8683.813187   1188.846872   110.302249      2.875651   \n",
+              "min      1.000000      0.000000      0.000000     0.019246      1.000000   \n",
+              "25%    130.000000    806.000000  19122.000000     0.842380      4.000000   \n",
+              "50%    259.000000   1849.000000  19132.000000     3.379144      6.000000   \n",
+              "75%    388.000000   2796.000000  19143.000000     8.090364      8.000000   \n",
+              "max    517.000000  99999.000000  19154.000000  1683.518683     10.000000   \n",
+              "\n",
+              "        Shape__Area  Shape__Length  \n",
+              "count  5.170000e+02     517.000000  \n",
+              "mean   1.355471e+05    1693.782638  \n",
+              "std    7.624401e+05    6143.765486  \n",
+              "min    1.327734e+02      57.986107  \n",
+              "25%    5.813199e+03     352.459045  \n",
+              "50%    2.335269e+04     689.437420  \n",
+              "75%    5.596671e+04    1186.864036  \n",
+              "max    1.164142e+07   91235.252213  "
+            ],
+            "text/html": [
+              "\n",
+              "  <div id=\"df-b6ac74e0-e35a-4793-93ab-b2ed43fd7cf7\">\n",
+              "    <div class=\"colab-df-container\">\n",
+              "      <div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>OBJECTID</th>\n",
+              "      <th>DPP_ASSET_ID</th>\n",
+              "      <th>ZIP_CODE</th>\n",
+              "      <th>ACREAGE</th>\n",
+              "      <th>PPR_DISTRICT</th>\n",
+              "      <th>Shape__Area</th>\n",
+              "      <th>Shape__Length</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>count</th>\n",
+              "      <td>517.000000</td>\n",
+              "      <td>517.000000</td>\n",
+              "      <td>517.000000</td>\n",
+              "      <td>517.000000</td>\n",
+              "      <td>517.000000</td>\n",
+              "      <td>5.170000e+02</td>\n",
+              "      <td>517.000000</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>mean</th>\n",
+              "      <td>259.000000</td>\n",
+              "      <td>2491.276596</td>\n",
+              "      <td>19057.479691</td>\n",
+              "      <td>19.619205</td>\n",
+              "      <td>5.841393</td>\n",
+              "      <td>1.355471e+05</td>\n",
+              "      <td>1693.782638</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>std</th>\n",
+              "      <td>149.389312</td>\n",
+              "      <td>8683.813187</td>\n",
+              "      <td>1188.846872</td>\n",
+              "      <td>110.302249</td>\n",
+              "      <td>2.875651</td>\n",
+              "      <td>7.624401e+05</td>\n",
+              "      <td>6143.765486</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>min</th>\n",
+              "      <td>1.000000</td>\n",
+              "      <td>0.000000</td>\n",
+              "      <td>0.000000</td>\n",
+              "      <td>0.019246</td>\n",
+              "      <td>1.000000</td>\n",
+              "      <td>1.327734e+02</td>\n",
+              "      <td>57.986107</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>25%</th>\n",
+              "      <td>130.000000</td>\n",
+              "      <td>806.000000</td>\n",
+              "      <td>19122.000000</td>\n",
+              "      <td>0.842380</td>\n",
+              "      <td>4.000000</td>\n",
+              "      <td>5.813199e+03</td>\n",
+              "      <td>352.459045</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>50%</th>\n",
+              "      <td>259.000000</td>\n",
+              "      <td>1849.000000</td>\n",
+              "      <td>19132.000000</td>\n",
+              "      <td>3.379144</td>\n",
+              "      <td>6.000000</td>\n",
+              "      <td>2.335269e+04</td>\n",
+              "      <td>689.437420</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>75%</th>\n",
+              "      <td>388.000000</td>\n",
+              "      <td>2796.000000</td>\n",
+              "      <td>19143.000000</td>\n",
+              "      <td>8.090364</td>\n",
+              "      <td>8.000000</td>\n",
+              "      <td>5.596671e+04</td>\n",
+              "      <td>1186.864036</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>max</th>\n",
+              "      <td>517.000000</td>\n",
+              "      <td>99999.000000</td>\n",
+              "      <td>19154.000000</td>\n",
+              "      <td>1683.518683</td>\n",
+              "      <td>10.000000</td>\n",
+              "      <td>1.164142e+07</td>\n",
+              "      <td>91235.252213</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>\n",
+              "      <button class=\"colab-df-convert\" onclick=\"convertToInteractive('df-b6ac74e0-e35a-4793-93ab-b2ed43fd7cf7')\"\n",
+              "              title=\"Convert this dataframe to an interactive table.\"\n",
+              "              style=\"display:none;\">\n",
+              "        \n",
+              "  <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\"viewBox=\"0 0 24 24\"\n",
+              "       width=\"24px\">\n",
+              "    <path d=\"M0 0h24v24H0V0z\" fill=\"none\"/>\n",
+              "    <path d=\"M18.56 5.44l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94zm-11 1L8.5 8.5l.94-2.06 2.06-.94-2.06-.94L8.5 2.5l-.94 2.06-2.06.94zm10 10l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94z\"/><path d=\"M17.41 7.96l-1.37-1.37c-.4-.4-.92-.59-1.43-.59-.52 0-1.04.2-1.43.59L10.3 9.45l-7.72 7.72c-.78.78-.78 2.05 0 2.83L4 21.41c.39.39.9.59 1.41.59.51 0 1.02-.2 1.41-.59l7.78-7.78 2.81-2.81c.8-.78.8-2.07 0-2.86zM5.41 20L4 18.59l7.72-7.72 1.47 1.35L5.41 20z\"/>\n",
+              "  </svg>\n",
+              "      </button>\n",
+              "      \n",
+              "  <style>\n",
+              "    .colab-df-container {\n",
+              "      display:flex;\n",
+              "      flex-wrap:wrap;\n",
+              "      gap: 12px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert {\n",
+              "      background-color: #E8F0FE;\n",
+              "      border: none;\n",
+              "      border-radius: 50%;\n",
+              "      cursor: pointer;\n",
+              "      display: none;\n",
+              "      fill: #1967D2;\n",
+              "      height: 32px;\n",
+              "      padding: 0 0 0 0;\n",
+              "      width: 32px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert:hover {\n",
+              "      background-color: #E2EBFA;\n",
+              "      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);\n",
+              "      fill: #174EA6;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert {\n",
+              "      background-color: #3B4455;\n",
+              "      fill: #D2E3FC;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert:hover {\n",
+              "      background-color: #434B5C;\n",
+              "      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);\n",
+              "      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));\n",
+              "      fill: #FFFFFF;\n",
+              "    }\n",
+              "  </style>\n",
+              "\n",
+              "      <script>\n",
+              "        const buttonEl =\n",
+              "          document.querySelector('#df-b6ac74e0-e35a-4793-93ab-b2ed43fd7cf7 button.colab-df-convert');\n",
+              "        buttonEl.style.display =\n",
+              "          google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
+              "\n",
+              "        async function convertToInteractive(key) {\n",
+              "          const element = document.querySelector('#df-b6ac74e0-e35a-4793-93ab-b2ed43fd7cf7');\n",
+              "          const dataTable =\n",
+              "            await google.colab.kernel.invokeFunction('convertToInteractive',\n",
+              "                                                     [key], {});\n",
+              "          if (!dataTable) return;\n",
+              "\n",
+              "          const docLinkHtml = 'Like what you see? Visit the ' +\n",
+              "            '<a target=\"_blank\" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'\n",
+              "            + ' to learn more about interactive tables.';\n",
+              "          element.innerHTML = '';\n",
+              "          dataTable['output_type'] = 'display_data';\n",
+              "          await google.colab.output.renderOutput(dataTable, element);\n",
+              "          const docLink = document.createElement('div');\n",
+              "          docLink.innerHTML = docLinkHtml;\n",
+              "          element.appendChild(docLink);\n",
+              "        }\n",
+              "      </script>\n",
+              "    </div>\n",
+              "  </div>\n",
+              "  "
+            ]
+          },
+          "metadata": {},
+          "execution_count": 67
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "The first 5 rows"
+      ],
+      "metadata": {
+        "id": "RPE8IgyaHB4o"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pparks.iloc[:5]"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 629
+        },
+        "id": "oRTDrhyfnU7e",
+        "outputId": "2b8589de-101e-481b-f0b2-ad3ed1f1a590"
+      },
+      "execution_count": 108,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "   OBJECTID                                     PUBLIC_NAME  \\\n",
+              "0         1  William H (Billy) Markward Memorial Playground   \n",
+              "1         2                                Schuylkill Banks   \n",
+              "2         3                           Schuylkill River Park   \n",
+              "3         4                           Frankford Boat Launch   \n",
+              "4         5                            Orthodox Street Park   \n",
+              "\n",
+              "             PARENT_NAME NESTED  \\\n",
+              "0  Schuylkill River Park      Y   \n",
+              "1       Schuylkill Banks      N   \n",
+              "2  Schuylkill River Park      N   \n",
+              "3  Frankford Boat Launch      N   \n",
+              "4   Orthodox Street Park      N   \n",
+              "\n",
+              "                                     OFFICIAL_NAME                  LABEL  \\\n",
+              "0  William H. (Billy) Markward Memorial Playground              Markward    \n",
+              "1                                              NaN       Schuylkill Banks   \n",
+              "2                                              NaN  Schuylkill River Park   \n",
+              "3                            Frankford Boat Launch       Frankford Launch   \n",
+              "4                                              NaN               Orthodox   \n",
+              "\n",
+              "                                               ALIAS  DPP_ASSET_ID  \\\n",
+              "0                                                NaN          1903   \n",
+              "1                              Schuylkill River Park          2794   \n",
+              "2                                                NaN          2992   \n",
+              "3       PA Fish & Boat;Frankford Arsenal Boat Launch          3090   \n",
+              "4  Orthodox Street Parcel; Bridesburg Riverfront ...          3091   \n",
+              "\n",
+              "        ADDRESS_911  ZIP_CODE  ... PPR_DISTRICT PPR_OPS_DISTRICT  \\\n",
+              "0    400 S TANEY ST     19146  ...            7             5, 7   \n",
+              "1    400 S TANEY ST     19103  ...            7             5, 7   \n",
+              "2    400 S TANEY ST     19146  ...            7             5, 7   \n",
+              "3    5625 TACONY ST     19137  ...            2                2   \n",
+              "4  3101 ORTHODOX ST     19137  ...            5                2   \n",
+              "\n",
+              "   COUNCIL_DISTRICT POLICE_DISTRICT CITY_SCALE_MAPS  LOCAL_SCALE_MAPS  \\\n",
+              "0                 2               9               Y                 Y   \n",
+              "1              2, 5           9, 17               Y                 Y   \n",
+              "2                 2               9               Y                 Y   \n",
+              "3                 6              15               Y                 Y   \n",
+              "4                 6              15               N                 N   \n",
+              "\n",
+              "  PROGRAM_SITES                                           COMMENTS  \\\n",
+              "0             Y                                                NaN   \n",
+              "1             N    Bill 160113 (4/14/16) -South of South St Bridge   \n",
+              "2             N                                                NaN   \n",
+              "3             N                                                NaN   \n",
+              "4             N  Officially acquired from PAID in 10/2019. Doc ...   \n",
+              "\n",
+              "     Shape__Area Shape__Length  \n",
+              "0   23295.664062    892.868012  \n",
+              "1  101477.171875   9300.670275  \n",
+              "2   27216.929688    799.048584  \n",
+              "3   78515.335938   1585.376114  \n",
+              "4   72926.187500   1304.901416  \n",
+              "\n",
+              "[5 rows x 25 columns]"
+            ],
+            "text/html": [
+              "\n",
+              "  <div id=\"df-5fbe4a13-2c1a-4883-b260-16a8b492e43b\">\n",
+              "    <div class=\"colab-df-container\">\n",
+              "      <div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>OBJECTID</th>\n",
+              "      <th>PUBLIC_NAME</th>\n",
+              "      <th>PARENT_NAME</th>\n",
+              "      <th>NESTED</th>\n",
+              "      <th>OFFICIAL_NAME</th>\n",
+              "      <th>LABEL</th>\n",
+              "      <th>ALIAS</th>\n",
+              "      <th>DPP_ASSET_ID</th>\n",
+              "      <th>ADDRESS_911</th>\n",
+              "      <th>ZIP_CODE</th>\n",
+              "      <th>...</th>\n",
+              "      <th>PPR_DISTRICT</th>\n",
+              "      <th>PPR_OPS_DISTRICT</th>\n",
+              "      <th>COUNCIL_DISTRICT</th>\n",
+              "      <th>POLICE_DISTRICT</th>\n",
+              "      <th>CITY_SCALE_MAPS</th>\n",
+              "      <th>LOCAL_SCALE_MAPS</th>\n",
+              "      <th>PROGRAM_SITES</th>\n",
+              "      <th>COMMENTS</th>\n",
+              "      <th>Shape__Area</th>\n",
+              "      <th>Shape__Length</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>0</th>\n",
+              "      <td>1</td>\n",
+              "      <td>William H (Billy) Markward Memorial Playground</td>\n",
+              "      <td>Schuylkill River Park</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>William H. (Billy) Markward Memorial Playground</td>\n",
+              "      <td>Markward</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>1903</td>\n",
+              "      <td>400 S TANEY ST</td>\n",
+              "      <td>19146</td>\n",
+              "      <td>...</td>\n",
+              "      <td>7</td>\n",
+              "      <td>5, 7</td>\n",
+              "      <td>2</td>\n",
+              "      <td>9</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>23295.664062</td>\n",
+              "      <td>892.868012</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>1</th>\n",
+              "      <td>2</td>\n",
+              "      <td>Schuylkill Banks</td>\n",
+              "      <td>Schuylkill Banks</td>\n",
+              "      <td>N</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>Schuylkill Banks</td>\n",
+              "      <td>Schuylkill River Park</td>\n",
+              "      <td>2794</td>\n",
+              "      <td>400 S TANEY ST</td>\n",
+              "      <td>19103</td>\n",
+              "      <td>...</td>\n",
+              "      <td>7</td>\n",
+              "      <td>5, 7</td>\n",
+              "      <td>2, 5</td>\n",
+              "      <td>9, 17</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>N</td>\n",
+              "      <td>Bill 160113 (4/14/16) -South of South St Bridge</td>\n",
+              "      <td>101477.171875</td>\n",
+              "      <td>9300.670275</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2</th>\n",
+              "      <td>3</td>\n",
+              "      <td>Schuylkill River Park</td>\n",
+              "      <td>Schuylkill River Park</td>\n",
+              "      <td>N</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>Schuylkill River Park</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>2992</td>\n",
+              "      <td>400 S TANEY ST</td>\n",
+              "      <td>19146</td>\n",
+              "      <td>...</td>\n",
+              "      <td>7</td>\n",
+              "      <td>5, 7</td>\n",
+              "      <td>2</td>\n",
+              "      <td>9</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>N</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>27216.929688</td>\n",
+              "      <td>799.048584</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>3</th>\n",
+              "      <td>4</td>\n",
+              "      <td>Frankford Boat Launch</td>\n",
+              "      <td>Frankford Boat Launch</td>\n",
+              "      <td>N</td>\n",
+              "      <td>Frankford Boat Launch</td>\n",
+              "      <td>Frankford Launch</td>\n",
+              "      <td>PA Fish &amp; Boat;Frankford Arsenal Boat Launch</td>\n",
+              "      <td>3090</td>\n",
+              "      <td>5625 TACONY ST</td>\n",
+              "      <td>19137</td>\n",
+              "      <td>...</td>\n",
+              "      <td>2</td>\n",
+              "      <td>2</td>\n",
+              "      <td>6</td>\n",
+              "      <td>15</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>N</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>78515.335938</td>\n",
+              "      <td>1585.376114</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>4</th>\n",
+              "      <td>5</td>\n",
+              "      <td>Orthodox Street Park</td>\n",
+              "      <td>Orthodox Street Park</td>\n",
+              "      <td>N</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>Orthodox</td>\n",
+              "      <td>Orthodox Street Parcel; Bridesburg Riverfront ...</td>\n",
+              "      <td>3091</td>\n",
+              "      <td>3101 ORTHODOX ST</td>\n",
+              "      <td>19137</td>\n",
+              "      <td>...</td>\n",
+              "      <td>5</td>\n",
+              "      <td>2</td>\n",
+              "      <td>6</td>\n",
+              "      <td>15</td>\n",
+              "      <td>N</td>\n",
+              "      <td>N</td>\n",
+              "      <td>N</td>\n",
+              "      <td>Officially acquired from PAID in 10/2019. Doc ...</td>\n",
+              "      <td>72926.187500</td>\n",
+              "      <td>1304.901416</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "<p>5 rows × 25 columns</p>\n",
+              "</div>\n",
+              "      <button class=\"colab-df-convert\" onclick=\"convertToInteractive('df-5fbe4a13-2c1a-4883-b260-16a8b492e43b')\"\n",
+              "              title=\"Convert this dataframe to an interactive table.\"\n",
+              "              style=\"display:none;\">\n",
+              "        \n",
+              "  <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\"viewBox=\"0 0 24 24\"\n",
+              "       width=\"24px\">\n",
+              "    <path d=\"M0 0h24v24H0V0z\" fill=\"none\"/>\n",
+              "    <path d=\"M18.56 5.44l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94zm-11 1L8.5 8.5l.94-2.06 2.06-.94-2.06-.94L8.5 2.5l-.94 2.06-2.06.94zm10 10l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94z\"/><path d=\"M17.41 7.96l-1.37-1.37c-.4-.4-.92-.59-1.43-.59-.52 0-1.04.2-1.43.59L10.3 9.45l-7.72 7.72c-.78.78-.78 2.05 0 2.83L4 21.41c.39.39.9.59 1.41.59.51 0 1.02-.2 1.41-.59l7.78-7.78 2.81-2.81c.8-.78.8-2.07 0-2.86zM5.41 20L4 18.59l7.72-7.72 1.47 1.35L5.41 20z\"/>\n",
+              "  </svg>\n",
+              "      </button>\n",
+              "      \n",
+              "  <style>\n",
+              "    .colab-df-container {\n",
+              "      display:flex;\n",
+              "      flex-wrap:wrap;\n",
+              "      gap: 12px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert {\n",
+              "      background-color: #E8F0FE;\n",
+              "      border: none;\n",
+              "      border-radius: 50%;\n",
+              "      cursor: pointer;\n",
+              "      display: none;\n",
+              "      fill: #1967D2;\n",
+              "      height: 32px;\n",
+              "      padding: 0 0 0 0;\n",
+              "      width: 32px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert:hover {\n",
+              "      background-color: #E2EBFA;\n",
+              "      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);\n",
+              "      fill: #174EA6;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert {\n",
+              "      background-color: #3B4455;\n",
+              "      fill: #D2E3FC;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert:hover {\n",
+              "      background-color: #434B5C;\n",
+              "      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);\n",
+              "      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));\n",
+              "      fill: #FFFFFF;\n",
+              "    }\n",
+              "  </style>\n",
+              "\n",
+              "      <script>\n",
+              "        const buttonEl =\n",
+              "          document.querySelector('#df-5fbe4a13-2c1a-4883-b260-16a8b492e43b button.colab-df-convert');\n",
+              "        buttonEl.style.display =\n",
+              "          google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
+              "\n",
+              "        async function convertToInteractive(key) {\n",
+              "          const element = document.querySelector('#df-5fbe4a13-2c1a-4883-b260-16a8b492e43b');\n",
+              "          const dataTable =\n",
+              "            await google.colab.kernel.invokeFunction('convertToInteractive',\n",
+              "                                                     [key], {});\n",
+              "          if (!dataTable) return;\n",
+              "\n",
+              "          const docLinkHtml = 'Like what you see? Visit the ' +\n",
+              "            '<a target=\"_blank\" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'\n",
+              "            + ' to learn more about interactive tables.';\n",
+              "          element.innerHTML = '';\n",
+              "          dataTable['output_type'] = 'display_data';\n",
+              "          await google.colab.output.renderOutput(dataTable, element);\n",
+              "          const docLink = document.createElement('div');\n",
+              "          docLink.innerHTML = docLinkHtml;\n",
+              "          element.appendChild(docLink);\n",
+              "        }\n",
+              "      </script>\n",
+              "    </div>\n",
+              "  </div>\n",
+              "  "
+            ]
+          },
+          "metadata": {},
+          "execution_count": 108
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "The last 5 rows"
+      ],
+      "metadata": {
+        "id": "qhA-3PcOHGRu"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pparks.iloc[-5:]"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 629
+        },
+        "id": "HFtYKaH8pkRL",
+        "outputId": "f2f4f23b-697a-4b2b-b2e2-e5335e16cc68"
+      },
+      "execution_count": 109,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "     OBJECTID                               PUBLIC_NAME  \\\n",
+              "512       513  Officer Robert Hayes Memorial Playground   \n",
+              "513       514                 Benjamin Franklin Parkway   \n",
+              "514       515                    Winter Street Greenway   \n",
+              "515       516                 61st and Cobbs Creek Park   \n",
+              "516       517                 Lawrence Court Breezeways   \n",
+              "\n",
+              "                                  PARENT_NAME NESTED  \\\n",
+              "512  Officer Robert Hayes Memorial Playground      N   \n",
+              "513                 Benjamin Franklin Parkway      N   \n",
+              "514                 Benjamin Franklin Parkway      Y   \n",
+              "515                          Cobbs Creek Park      Y   \n",
+              "516                 Lawrence Court Breezeways      N   \n",
+              "\n",
+              "                                OFFICIAL_NAME                   LABEL  \\\n",
+              "512  Officer Robert Hayes Memorial Playground                   Hayes   \n",
+              "513                 Benjamin Franklin Parkway  Benjamin Franklin Pkwy   \n",
+              "514                                       NaN         Winter Greenway   \n",
+              "515                                       NaN    61st and Cobbs Creek   \n",
+              "516                                       NaN      Lawrence Breezeway   \n",
+              "\n",
+              "                                                 ALIAS  DPP_ASSET_ID  \\\n",
+              "512                              Swenson Park, Conwell          1923   \n",
+              "513                                        The Parkway          1226   \n",
+              "514  Rob Stuart Memorial Dog Park; Winter Street Gr...             0   \n",
+              "515                                                             3481   \n",
+              "516                            Lawrence Court Walkways          3867   \n",
+              "\n",
+              "            ADDRESS_911  ZIP_CODE  ... PPR_DISTRICT PPR_OPS_DISTRICT  \\\n",
+              "512   9949 PRESIDENT ST     19115  ...            1                1   \n",
+              "513   BENJ FRANKLIN PKY         0  ...            7                5   \n",
+              "514   BENJ FRANKLIN PKY         0  ...            7                5   \n",
+              "515  61ST & COBBS CREEK     19143  ...            8                8   \n",
+              "516     335 LAWRENCE CT     19106  ...           10                5   \n",
+              "\n",
+              "     COUNCIL_DISTRICT POLICE_DISTRICT CITY_SCALE_MAPS  LOCAL_SCALE_MAPS  \\\n",
+              "512                10               7               Y                 Y   \n",
+              "513                 5               9               Y                 Y   \n",
+              "514                 5               9               N                 Y   \n",
+              "515                 3              18               Y                 Y   \n",
+              "516                 1               6               N                 Y   \n",
+              "\n",
+              "    PROGRAM_SITES                                           COMMENTS  \\\n",
+              "512             Y                                                NaN   \n",
+              "513             N  22nd and Hamilton 'wedge' added (Street Legal ...   \n",
+              "514             N  Named in 2021. Winter (21st-22nd) has a dog pa...   \n",
+              "515             Y                                                NaN   \n",
+              "516             N                                                NaN   \n",
+              "\n",
+              "       Shape__Area Shape__Length  \n",
+              "512  139660.027344   1698.902277  \n",
+              "513  103066.453125   9195.466911  \n",
+              "514    5386.812500    679.857371  \n",
+              "515   35596.937500   1037.395645  \n",
+              "516    1945.863281    394.259401  \n",
+              "\n",
+              "[5 rows x 25 columns]"
+            ],
+            "text/html": [
+              "\n",
+              "  <div id=\"df-aee7b75d-26b5-4129-9878-4e48950e20b2\">\n",
+              "    <div class=\"colab-df-container\">\n",
+              "      <div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>OBJECTID</th>\n",
+              "      <th>PUBLIC_NAME</th>\n",
+              "      <th>PARENT_NAME</th>\n",
+              "      <th>NESTED</th>\n",
+              "      <th>OFFICIAL_NAME</th>\n",
+              "      <th>LABEL</th>\n",
+              "      <th>ALIAS</th>\n",
+              "      <th>DPP_ASSET_ID</th>\n",
+              "      <th>ADDRESS_911</th>\n",
+              "      <th>ZIP_CODE</th>\n",
+              "      <th>...</th>\n",
+              "      <th>PPR_DISTRICT</th>\n",
+              "      <th>PPR_OPS_DISTRICT</th>\n",
+              "      <th>COUNCIL_DISTRICT</th>\n",
+              "      <th>POLICE_DISTRICT</th>\n",
+              "      <th>CITY_SCALE_MAPS</th>\n",
+              "      <th>LOCAL_SCALE_MAPS</th>\n",
+              "      <th>PROGRAM_SITES</th>\n",
+              "      <th>COMMENTS</th>\n",
+              "      <th>Shape__Area</th>\n",
+              "      <th>Shape__Length</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>512</th>\n",
+              "      <td>513</td>\n",
+              "      <td>Officer Robert Hayes Memorial Playground</td>\n",
+              "      <td>Officer Robert Hayes Memorial Playground</td>\n",
+              "      <td>N</td>\n",
+              "      <td>Officer Robert Hayes Memorial Playground</td>\n",
+              "      <td>Hayes</td>\n",
+              "      <td>Swenson Park, Conwell</td>\n",
+              "      <td>1923</td>\n",
+              "      <td>9949 PRESIDENT ST</td>\n",
+              "      <td>19115</td>\n",
+              "      <td>...</td>\n",
+              "      <td>1</td>\n",
+              "      <td>1</td>\n",
+              "      <td>10</td>\n",
+              "      <td>7</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>139660.027344</td>\n",
+              "      <td>1698.902277</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>513</th>\n",
+              "      <td>514</td>\n",
+              "      <td>Benjamin Franklin Parkway</td>\n",
+              "      <td>Benjamin Franklin Parkway</td>\n",
+              "      <td>N</td>\n",
+              "      <td>Benjamin Franklin Parkway</td>\n",
+              "      <td>Benjamin Franklin Pkwy</td>\n",
+              "      <td>The Parkway</td>\n",
+              "      <td>1226</td>\n",
+              "      <td>BENJ FRANKLIN PKY</td>\n",
+              "      <td>0</td>\n",
+              "      <td>...</td>\n",
+              "      <td>7</td>\n",
+              "      <td>5</td>\n",
+              "      <td>5</td>\n",
+              "      <td>9</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>N</td>\n",
+              "      <td>22nd and Hamilton 'wedge' added (Street Legal ...</td>\n",
+              "      <td>103066.453125</td>\n",
+              "      <td>9195.466911</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>514</th>\n",
+              "      <td>515</td>\n",
+              "      <td>Winter Street Greenway</td>\n",
+              "      <td>Benjamin Franklin Parkway</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>Winter Greenway</td>\n",
+              "      <td>Rob Stuart Memorial Dog Park; Winter Street Gr...</td>\n",
+              "      <td>0</td>\n",
+              "      <td>BENJ FRANKLIN PKY</td>\n",
+              "      <td>0</td>\n",
+              "      <td>...</td>\n",
+              "      <td>7</td>\n",
+              "      <td>5</td>\n",
+              "      <td>5</td>\n",
+              "      <td>9</td>\n",
+              "      <td>N</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>N</td>\n",
+              "      <td>Named in 2021. Winter (21st-22nd) has a dog pa...</td>\n",
+              "      <td>5386.812500</td>\n",
+              "      <td>679.857371</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>515</th>\n",
+              "      <td>516</td>\n",
+              "      <td>61st and Cobbs Creek Park</td>\n",
+              "      <td>Cobbs Creek Park</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>61st and Cobbs Creek</td>\n",
+              "      <td></td>\n",
+              "      <td>3481</td>\n",
+              "      <td>61ST &amp; COBBS CREEK</td>\n",
+              "      <td>19143</td>\n",
+              "      <td>...</td>\n",
+              "      <td>8</td>\n",
+              "      <td>8</td>\n",
+              "      <td>3</td>\n",
+              "      <td>18</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>35596.937500</td>\n",
+              "      <td>1037.395645</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>516</th>\n",
+              "      <td>517</td>\n",
+              "      <td>Lawrence Court Breezeways</td>\n",
+              "      <td>Lawrence Court Breezeways</td>\n",
+              "      <td>N</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>Lawrence Breezeway</td>\n",
+              "      <td>Lawrence Court Walkways</td>\n",
+              "      <td>3867</td>\n",
+              "      <td>335 LAWRENCE CT</td>\n",
+              "      <td>19106</td>\n",
+              "      <td>...</td>\n",
+              "      <td>10</td>\n",
+              "      <td>5</td>\n",
+              "      <td>1</td>\n",
+              "      <td>6</td>\n",
+              "      <td>N</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>N</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>1945.863281</td>\n",
+              "      <td>394.259401</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "<p>5 rows × 25 columns</p>\n",
+              "</div>\n",
+              "      <button class=\"colab-df-convert\" onclick=\"convertToInteractive('df-aee7b75d-26b5-4129-9878-4e48950e20b2')\"\n",
+              "              title=\"Convert this dataframe to an interactive table.\"\n",
+              "              style=\"display:none;\">\n",
+              "        \n",
+              "  <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\"viewBox=\"0 0 24 24\"\n",
+              "       width=\"24px\">\n",
+              "    <path d=\"M0 0h24v24H0V0z\" fill=\"none\"/>\n",
+              "    <path d=\"M18.56 5.44l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94zm-11 1L8.5 8.5l.94-2.06 2.06-.94-2.06-.94L8.5 2.5l-.94 2.06-2.06.94zm10 10l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94z\"/><path d=\"M17.41 7.96l-1.37-1.37c-.4-.4-.92-.59-1.43-.59-.52 0-1.04.2-1.43.59L10.3 9.45l-7.72 7.72c-.78.78-.78 2.05 0 2.83L4 21.41c.39.39.9.59 1.41.59.51 0 1.02-.2 1.41-.59l7.78-7.78 2.81-2.81c.8-.78.8-2.07 0-2.86zM5.41 20L4 18.59l7.72-7.72 1.47 1.35L5.41 20z\"/>\n",
+              "  </svg>\n",
+              "      </button>\n",
+              "      \n",
+              "  <style>\n",
+              "    .colab-df-container {\n",
+              "      display:flex;\n",
+              "      flex-wrap:wrap;\n",
+              "      gap: 12px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert {\n",
+              "      background-color: #E8F0FE;\n",
+              "      border: none;\n",
+              "      border-radius: 50%;\n",
+              "      cursor: pointer;\n",
+              "      display: none;\n",
+              "      fill: #1967D2;\n",
+              "      height: 32px;\n",
+              "      padding: 0 0 0 0;\n",
+              "      width: 32px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert:hover {\n",
+              "      background-color: #E2EBFA;\n",
+              "      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);\n",
+              "      fill: #174EA6;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert {\n",
+              "      background-color: #3B4455;\n",
+              "      fill: #D2E3FC;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert:hover {\n",
+              "      background-color: #434B5C;\n",
+              "      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);\n",
+              "      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));\n",
+              "      fill: #FFFFFF;\n",
+              "    }\n",
+              "  </style>\n",
+              "\n",
+              "      <script>\n",
+              "        const buttonEl =\n",
+              "          document.querySelector('#df-aee7b75d-26b5-4129-9878-4e48950e20b2 button.colab-df-convert');\n",
+              "        buttonEl.style.display =\n",
+              "          google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
+              "\n",
+              "        async function convertToInteractive(key) {\n",
+              "          const element = document.querySelector('#df-aee7b75d-26b5-4129-9878-4e48950e20b2');\n",
+              "          const dataTable =\n",
+              "            await google.colab.kernel.invokeFunction('convertToInteractive',\n",
+              "                                                     [key], {});\n",
+              "          if (!dataTable) return;\n",
+              "\n",
+              "          const docLinkHtml = 'Like what you see? Visit the ' +\n",
+              "            '<a target=\"_blank\" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'\n",
+              "            + ' to learn more about interactive tables.';\n",
+              "          element.innerHTML = '';\n",
+              "          dataTable['output_type'] = 'display_data';\n",
+              "          await google.colab.output.renderOutput(dataTable, element);\n",
+              "          const docLink = document.createElement('div');\n",
+              "          docLink.innerHTML = docLinkHtml;\n",
+              "          element.appendChild(docLink);\n",
+              "        }\n",
+              "      </script>\n",
+              "    </div>\n",
+              "  </div>\n",
+              "  "
+            ]
+          },
+          "metadata": {},
+          "execution_count": 109
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pparks.iloc[:5]"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 490
+        },
+        "id": "FFUbL7pvHRIo",
+        "outputId": "4bf5541f-ccf3-4706-e9f3-0d4d0fc37a72"
+      },
+      "execution_count": 239,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "    OBJECTID                                     PUBLIC_NAME  \\\n",
+              "0          1  William H (Billy) Markward Memorial Playground   \n",
+              "2          3                           Schuylkill River Park   \n",
+              "15        16                        Whitby Avenue Playground   \n",
+              "16        17                          29th and Passyunk Park   \n",
+              "17        18                           Price Street Play Lot   \n",
+              "\n",
+              "               PARENT_NAME NESTED  \\\n",
+              "0    Schuylkill River Park      Y   \n",
+              "2    Schuylkill River Park      N   \n",
+              "15        Cobbs Creek Park      Y   \n",
+              "16  29th and Passyunk Park      N   \n",
+              "17   Price Street Play Lot      N   \n",
+              "\n",
+              "                                      OFFICIAL_NAME                  LABEL  \\\n",
+              "0   William H. (Billy) Markward Memorial Playground              Markward    \n",
+              "2                                               NaN  Schuylkill River Park   \n",
+              "15                                              NaN                 Whitby   \n",
+              "16                                              NaN     29th and Passyunk    \n",
+              "17                                              NaN               Price St   \n",
+              "\n",
+              "   ALIAS  DPP_ASSET_ID           ADDRESS_911  ZIP_CODE  ... PPR_DISTRICT  \\\n",
+              "0    NaN          1903        400 S TANEY ST     19146  ...            7   \n",
+              "2    NaN          2992        400 S TANEY ST     19146  ...            7   \n",
+              "15                1372  1300 COBBS CREEK PKY     19143  ...            8   \n",
+              "16                 432   2827 W PASSYUNK AVE     19145  ...            9   \n",
+              "17                 826        185 W PRICE ST     19144  ...            4   \n",
+              "\n",
+              "   PPR_OPS_DISTRICT  COUNCIL_DISTRICT POLICE_DISTRICT CITY_SCALE_MAPS  \\\n",
+              "0              5, 7                 2               9               Y   \n",
+              "2              5, 7                 2               9               Y   \n",
+              "15                8                 3              12               Y   \n",
+              "16                7                 2               1               Y   \n",
+              "17                4                 8              14               Y   \n",
+              "\n",
+              "    LOCAL_SCALE_MAPS PROGRAM_SITES COMMENTS   Shape__Area Shape__Length  \n",
+              "0                  Y             Y      NaN  23295.664062    892.868012  \n",
+              "2                  Y             N      NaN  27216.929688    799.048584  \n",
+              "15                 Y             Y      NaN  38916.484375    949.498194  \n",
+              "16                 Y             Y      NaN   3830.242188    247.032048  \n",
+              "17                 Y             N      NaN   1249.839844    143.734003  \n",
+              "\n",
+              "[5 rows x 25 columns]"
+            ],
+            "text/html": [
+              "\n",
+              "  <div id=\"df-123f7861-c5da-47f5-a438-d926ce424dfa\">\n",
+              "    <div class=\"colab-df-container\">\n",
+              "      <div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>OBJECTID</th>\n",
+              "      <th>PUBLIC_NAME</th>\n",
+              "      <th>PARENT_NAME</th>\n",
+              "      <th>NESTED</th>\n",
+              "      <th>OFFICIAL_NAME</th>\n",
+              "      <th>LABEL</th>\n",
+              "      <th>ALIAS</th>\n",
+              "      <th>DPP_ASSET_ID</th>\n",
+              "      <th>ADDRESS_911</th>\n",
+              "      <th>ZIP_CODE</th>\n",
+              "      <th>...</th>\n",
+              "      <th>PPR_DISTRICT</th>\n",
+              "      <th>PPR_OPS_DISTRICT</th>\n",
+              "      <th>COUNCIL_DISTRICT</th>\n",
+              "      <th>POLICE_DISTRICT</th>\n",
+              "      <th>CITY_SCALE_MAPS</th>\n",
+              "      <th>LOCAL_SCALE_MAPS</th>\n",
+              "      <th>PROGRAM_SITES</th>\n",
+              "      <th>COMMENTS</th>\n",
+              "      <th>Shape__Area</th>\n",
+              "      <th>Shape__Length</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>0</th>\n",
+              "      <td>1</td>\n",
+              "      <td>William H (Billy) Markward Memorial Playground</td>\n",
+              "      <td>Schuylkill River Park</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>William H. (Billy) Markward Memorial Playground</td>\n",
+              "      <td>Markward</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>1903</td>\n",
+              "      <td>400 S TANEY ST</td>\n",
+              "      <td>19146</td>\n",
+              "      <td>...</td>\n",
+              "      <td>7</td>\n",
+              "      <td>5, 7</td>\n",
+              "      <td>2</td>\n",
+              "      <td>9</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>23295.664062</td>\n",
+              "      <td>892.868012</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2</th>\n",
+              "      <td>3</td>\n",
+              "      <td>Schuylkill River Park</td>\n",
+              "      <td>Schuylkill River Park</td>\n",
+              "      <td>N</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>Schuylkill River Park</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>2992</td>\n",
+              "      <td>400 S TANEY ST</td>\n",
+              "      <td>19146</td>\n",
+              "      <td>...</td>\n",
+              "      <td>7</td>\n",
+              "      <td>5, 7</td>\n",
+              "      <td>2</td>\n",
+              "      <td>9</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>N</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>27216.929688</td>\n",
+              "      <td>799.048584</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>15</th>\n",
+              "      <td>16</td>\n",
+              "      <td>Whitby Avenue Playground</td>\n",
+              "      <td>Cobbs Creek Park</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>Whitby</td>\n",
+              "      <td></td>\n",
+              "      <td>1372</td>\n",
+              "      <td>1300 COBBS CREEK PKY</td>\n",
+              "      <td>19143</td>\n",
+              "      <td>...</td>\n",
+              "      <td>8</td>\n",
+              "      <td>8</td>\n",
+              "      <td>3</td>\n",
+              "      <td>12</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>38916.484375</td>\n",
+              "      <td>949.498194</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>16</th>\n",
+              "      <td>17</td>\n",
+              "      <td>29th and Passyunk Park</td>\n",
+              "      <td>29th and Passyunk Park</td>\n",
+              "      <td>N</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>29th and Passyunk</td>\n",
+              "      <td></td>\n",
+              "      <td>432</td>\n",
+              "      <td>2827 W PASSYUNK AVE</td>\n",
+              "      <td>19145</td>\n",
+              "      <td>...</td>\n",
+              "      <td>9</td>\n",
+              "      <td>7</td>\n",
+              "      <td>2</td>\n",
+              "      <td>1</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>3830.242188</td>\n",
+              "      <td>247.032048</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>17</th>\n",
+              "      <td>18</td>\n",
+              "      <td>Price Street Play Lot</td>\n",
+              "      <td>Price Street Play Lot</td>\n",
+              "      <td>N</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>Price St</td>\n",
+              "      <td></td>\n",
+              "      <td>826</td>\n",
+              "      <td>185 W PRICE ST</td>\n",
+              "      <td>19144</td>\n",
+              "      <td>...</td>\n",
+              "      <td>4</td>\n",
+              "      <td>4</td>\n",
+              "      <td>8</td>\n",
+              "      <td>14</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>Y</td>\n",
+              "      <td>N</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>1249.839844</td>\n",
+              "      <td>143.734003</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "<p>5 rows × 25 columns</p>\n",
+              "</div>\n",
+              "      <button class=\"colab-df-convert\" onclick=\"convertToInteractive('df-123f7861-c5da-47f5-a438-d926ce424dfa')\"\n",
+              "              title=\"Convert this dataframe to an interactive table.\"\n",
+              "              style=\"display:none;\">\n",
+              "        \n",
+              "  <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\"viewBox=\"0 0 24 24\"\n",
+              "       width=\"24px\">\n",
+              "    <path d=\"M0 0h24v24H0V0z\" fill=\"none\"/>\n",
+              "    <path d=\"M18.56 5.44l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94zm-11 1L8.5 8.5l.94-2.06 2.06-.94-2.06-.94L8.5 2.5l-.94 2.06-2.06.94zm10 10l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94z\"/><path d=\"M17.41 7.96l-1.37-1.37c-.4-.4-.92-.59-1.43-.59-.52 0-1.04.2-1.43.59L10.3 9.45l-7.72 7.72c-.78.78-.78 2.05 0 2.83L4 21.41c.39.39.9.59 1.41.59.51 0 1.02-.2 1.41-.59l7.78-7.78 2.81-2.81c.8-.78.8-2.07 0-2.86zM5.41 20L4 18.59l7.72-7.72 1.47 1.35L5.41 20z\"/>\n",
+              "  </svg>\n",
+              "      </button>\n",
+              "      \n",
+              "  <style>\n",
+              "    .colab-df-container {\n",
+              "      display:flex;\n",
+              "      flex-wrap:wrap;\n",
+              "      gap: 12px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert {\n",
+              "      background-color: #E8F0FE;\n",
+              "      border: none;\n",
+              "      border-radius: 50%;\n",
+              "      cursor: pointer;\n",
+              "      display: none;\n",
+              "      fill: #1967D2;\n",
+              "      height: 32px;\n",
+              "      padding: 0 0 0 0;\n",
+              "      width: 32px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert:hover {\n",
+              "      background-color: #E2EBFA;\n",
+              "      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);\n",
+              "      fill: #174EA6;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert {\n",
+              "      background-color: #3B4455;\n",
+              "      fill: #D2E3FC;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert:hover {\n",
+              "      background-color: #434B5C;\n",
+              "      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);\n",
+              "      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));\n",
+              "      fill: #FFFFFF;\n",
+              "    }\n",
+              "  </style>\n",
+              "\n",
+              "      <script>\n",
+              "        const buttonEl =\n",
+              "          document.querySelector('#df-123f7861-c5da-47f5-a438-d926ce424dfa button.colab-df-convert');\n",
+              "        buttonEl.style.display =\n",
+              "          google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
+              "\n",
+              "        async function convertToInteractive(key) {\n",
+              "          const element = document.querySelector('#df-123f7861-c5da-47f5-a438-d926ce424dfa');\n",
+              "          const dataTable =\n",
+              "            await google.colab.kernel.invokeFunction('convertToInteractive',\n",
+              "                                                     [key], {});\n",
+              "          if (!dataTable) return;\n",
+              "\n",
+              "          const docLinkHtml = 'Like what you see? Visit the ' +\n",
+              "            '<a target=\"_blank\" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'\n",
+              "            + ' to learn more about interactive tables.';\n",
+              "          element.innerHTML = '';\n",
+              "          dataTable['output_type'] = 'display_data';\n",
+              "          await google.colab.output.renderOutput(dataTable, element);\n",
+              "          const docLink = document.createElement('div');\n",
+              "          docLink.innerHTML = docLinkHtml;\n",
+              "          element.appendChild(docLink);\n",
+              "        }\n",
+              "      </script>\n",
+              "    </div>\n",
+              "  </div>\n",
+              "  "
+            ]
+          },
+          "metadata": {},
+          "execution_count": 239
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pparks[\"ACREAGE\"].mean()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "6er-XIqhrf69",
+        "outputId": "36d8da4b-0837-4315-d459-2ea8d84b6cd1"
+      },
+      "execution_count": 121,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "19.619205270754357"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 121
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pparks[\"ACREAGE\"].median()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "TMENpBmcshIN",
+        "outputId": "ed2a8969-bb61-4669-c58d-420b1162fce1"
+      },
+      "execution_count": 124,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "3.37914443"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 124
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Because the mean is a larger value than the median, we can assume that at least half of the parks, as the median is the middle number, are 3.37914443 acres or smaller. That being said we can also see that there is a descrepancy in size of the parks, as the mean is much higher, a little more than 19.5 acres. We can assume, in the larger 50% of parks, the values past the median, there are some parks much larger than even 19.5 acres as the 3.379..., and smaller, sized parks would have brought the average down. "
+      ],
+      "metadata": {
+        "id": "hQGF_RY2tSNe"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "This (min,max) isn't part of the assighnment, I just thought it was somehting I could do and then figured out how. I also thought it could help as input into a full histogram, I could not figure out how that could work though."
+      ],
+      "metadata": {
+        "id": "XsXn5S3jIB91"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pparks.min()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "CLNmiDlOzAzq",
+        "outputId": "fcdc7e0d-fc55-46bf-f293-ed47efa387d1"
+      },
+      "execution_count": 166,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/usr/local/lib/python3.7/dist-packages/ipykernel_launcher.py:1: FutureWarning: Dropping of nuisance columns in DataFrame reductions (with 'numeric_only=None') is deprecated; in a future version this will raise TypeError.  Select only valid columns before calling the reduction.\n",
+            "  \"\"\"Entry point for launching an IPython kernel.\n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "OBJECTID                                           1\n",
+              "PUBLIC_NAME                10th and Lemon Playground\n",
+              "PARENT_NAME                10th and Lemon Playground\n",
+              "NESTED                                             N\n",
+              "DPP_ASSET_ID                                       0\n",
+              "ZIP_CODE                                           0\n",
+              "ACREAGE                                     0.019246\n",
+              "PROPERTY_CLASSIFICATION            NEIGHBORHOOD_PARK\n",
+              "PPR_USE                                ATHLETIC_GOLF\n",
+              "PPR_DISTRICT                                       1\n",
+              "PPR_OPS_DISTRICT                                   1\n",
+              "CITY_SCALE_MAPS                                    N\n",
+              "LOCAL_SCALE_MAPS                                   N\n",
+              "PROGRAM_SITES                                      N\n",
+              "Shape__Area                               132.773438\n",
+              "Shape__Length                              57.986107\n",
+              "dtype: object"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 166
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pparks.max()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "iomx634-1v-a",
+        "outputId": "1530a508-a7f8-4be7-d132-821634c08629"
+      },
+      "execution_count": 161,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/usr/local/lib/python3.7/dist-packages/ipykernel_launcher.py:1: FutureWarning: Dropping of nuisance columns in DataFrame reductions (with 'numeric_only=None') is deprecated; in a future version this will raise TypeError.  Select only valid columns before calling the reduction.\n",
+            "  \"\"\"Entry point for launching an IPython kernel.\n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "OBJECTID                                       517\n",
+              "PUBLIC_NAME                Yorktown at Saratoga Pl\n",
+              "PARENT_NAME                       Yorktown Commons\n",
+              "NESTED                                           Y\n",
+              "DPP_ASSET_ID                                 99999\n",
+              "ZIP_CODE                                     19154\n",
+              "ACREAGE                                1683.518683\n",
+              "PROPERTY_CLASSIFICATION             WATERSHED_PARK\n",
+              "PPR_USE                                        ZOO\n",
+              "PPR_DISTRICT                                    10\n",
+              "PPR_OPS_DISTRICT                                 8\n",
+              "CITY_SCALE_MAPS                                  Y\n",
+              "LOCAL_SCALE_MAPS                                 Y\n",
+              "PROGRAM_SITES                                    Y\n",
+              "Shape__Area                        11641424.113281\n",
+              "Shape__Length                         91235.252213\n",
+              "dtype: object"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 161
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pparks[\"ACREAGE\"].hist()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 282
+        },
+        "id": "0X8a5XUevxwO",
+        "outputId": "082de1c2-e299-49d9-84f4-7bc5ee631fc5"
+      },
+      "execution_count": 125,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "<matplotlib.axes._subplots.AxesSubplot at 0x7ff7dcc98190>"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 125
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 432x288 with 1 Axes>"
+            ],
+            "image/png": "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\n"
+          },
+          "metadata": {
+            "needs_background": "light"
+          }
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from matplotlib import colors\n",
+        "ax = pparks[\"ACREAGE\"].hist(bins= 10), pparks[\"ACREAGE\"].mean(), pparks[\"ACREAGE\"].median()\n",
+        "colors=['Red', 'Yellow']"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 265
+        },
+        "id": "0xEH2w179jLB",
+        "outputId": "4be222e8-fc3c-428d-d00d-ce43b89449c3"
+      },
+      "execution_count": 208,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 432x288 with 1 Axes>"
+            ],
+            "image/png": "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\n"
+          },
+          "metadata": {
+            "needs_background": "light"
+          }
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "I could not figure out how to make the colors appear. That's something I'm excited to learn about. I'm assuming that the code was successful, because I did not get an error message. If I was using the right code to get colors to overplot on the hist is another question. I chose 10 bins because online I saw it was good place to start."
+      ],
+      "metadata": {
+        "id": "9ylBQN_FIzF7"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pparks.hist(column=[\"ACREAGE\"])"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 316
+        },
+        "id": "myFnPgHn5f1H",
+        "outputId": "1c5f62e0-2b41-4312-bf59-492d90004c38"
+      },
+      "execution_count": 181,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "array([[<matplotlib.axes._subplots.AxesSubplot object at 0x7ff7ccd89050>]],\n",
+              "      dtype=object)"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 181
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 432x288 with 1 Axes>"
+            ],
+            "image/png": "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\n"
+          },
+          "metadata": {
+            "needs_background": "light"
+          }
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pparks[~(pparks[\"ACREAGE\"]>\"10\")]"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 311
+        },
+        "id": "2wDulfXhMOIc",
+        "outputId": "7ce4554d-c3ac-46a4-b5ec-defb73ffc621"
+      },
+      "execution_count": 252,
+      "outputs": [
+        {
+          "output_type": "error",
+          "ename": "TypeError",
+          "evalue": "ignored",
+          "traceback": [
+            "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+            "\u001b[0;31mTypeError\u001b[0m                                 Traceback (most recent call last)",
+            "\u001b[0;32m<ipython-input-252-e35c49203361>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mpparks\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m~\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mpparks\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m\"ACREAGE\"\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m>\u001b[0m\u001b[0;34m\"10\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+            "\u001b[0;32m/usr/local/lib/python3.7/dist-packages/pandas/core/ops/common.py\u001b[0m in \u001b[0;36mnew_method\u001b[0;34m(self, other)\u001b[0m\n\u001b[1;32m     67\u001b[0m         \u001b[0mother\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mitem_from_zerodim\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mother\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     68\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 69\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mmethod\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mother\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     70\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     71\u001b[0m     \u001b[0;32mreturn\u001b[0m \u001b[0mnew_method\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.7/dist-packages/pandas/core/arraylike.py\u001b[0m in \u001b[0;36m__gt__\u001b[0;34m(self, other)\u001b[0m\n\u001b[1;32m     46\u001b[0m     \u001b[0;34m@\u001b[0m\u001b[0munpack_zerodim_and_defer\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"__gt__\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     47\u001b[0m     \u001b[0;32mdef\u001b[0m \u001b[0m__gt__\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mother\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 48\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_cmp_method\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mother\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0moperator\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mgt\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     49\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     50\u001b[0m     \u001b[0;34m@\u001b[0m\u001b[0munpack_zerodim_and_defer\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"__ge__\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.7/dist-packages/pandas/core/series.py\u001b[0m in \u001b[0;36m_cmp_method\u001b[0;34m(self, other, op)\u001b[0m\n\u001b[1;32m   5500\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   5501\u001b[0m         \u001b[0;32mwith\u001b[0m \u001b[0mnp\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0merrstate\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mall\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m\"ignore\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m-> 5502\u001b[0;31m             \u001b[0mres_values\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mops\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mcomparison_op\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mlvalues\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mrvalues\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mop\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m   5503\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   5504\u001b[0m         \u001b[0;32mreturn\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_construct_result\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mres_values\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mname\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mres_name\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.7/dist-packages/pandas/core/ops/array_ops.py\u001b[0m in \u001b[0;36mcomparison_op\u001b[0;34m(left, right, op)\u001b[0m\n\u001b[1;32m    279\u001b[0m     \u001b[0;32melif\u001b[0m \u001b[0mis_numeric_v_string_like\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mlvalues\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mrvalues\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    280\u001b[0m         \u001b[0;31m# GH#36377 going through the numexpr path would incorrectly raise\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 281\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0minvalid_comparison\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mlvalues\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mrvalues\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mop\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    282\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    283\u001b[0m     \u001b[0;32melif\u001b[0m \u001b[0mis_object_dtype\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mlvalues\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdtype\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;32mor\u001b[0m \u001b[0misinstance\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mrvalues\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mstr\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.7/dist-packages/pandas/core/ops/invalid.py\u001b[0m in \u001b[0;36minvalid_comparison\u001b[0;34m(left, right, op)\u001b[0m\n\u001b[1;32m     32\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     33\u001b[0m         \u001b[0mtyp\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mtype\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mright\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m__name__\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 34\u001b[0;31m         \u001b[0;32mraise\u001b[0m \u001b[0mTypeError\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34mf\"Invalid comparison between dtype={left.dtype} and {typ}\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     35\u001b[0m     \u001b[0;32mreturn\u001b[0m \u001b[0mres_values\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     36\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;31mTypeError\u001b[0m: Invalid comparison between dtype=float64 and str"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pparks[\"ACREAGE\"].std()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "_3ZiDM59AQ-Q",
+        "outputId": "caf48f07-cb47-4899-9ec9-0ebfec62d988"
+      },
+      "execution_count": 207,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "110.30224917686694"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 207
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "I believe in the github instructions you got 131.88. I'm not sure what I've done to the fata to have the discrpency. "
+      ],
+      "metadata": {
+        "id": "pCq8mMhlJQE4"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pparks.drop(pparks[pparks[\"ACREAGE\"] >= 10].index, inplace = True)"
+      ],
+      "metadata": {
+        "id": "ZljNr_U2EfB4"
+      },
+      "execution_count": 226,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "I thought I'd done this correctly, however, I'd imagine the mean and median would be larger values than before if we were to remove the Acerage values that were less than 10.\n",
+        "\n",
+        "Because the mean and median are different I'm hoping this works as intended, again they seem too small.\n",
+        "Based on how the mean and median have changed and are now very close to the same number we could assume that the parks that had less than 10 acres were brining the average down.\n",
+        "\n",
+        "I tried \n",
+        "pparks[~(pparks[\"ACREAGE\"]>\"10\")] and it didn't work, so I found this other method and it did someting but didn't do what I think I intended. I've listed that above."
+      ],
+      "metadata": {
+        "id": "Qte_sdn1I9-E"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pparks[\"ACREAGE\"].mean()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "VebxXT0YFDZ-",
+        "outputId": "d6285976-bd21-4922-f516-dcc74b7ee9b6"
+      },
+      "execution_count": 227,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "2.8719647092665035"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 227
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pparks[\"ACREAGE\"].median()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "txMsVGTFFOqp",
+        "outputId": "58dfaf60-6569-4253-dece-4b5071ff40af"
+      },
+      "execution_count": 228,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "2.05696837"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 228
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "ax = pparks[\"ACREAGE\"].hist(bins= 10), pparks[\"ACREAGE\"].mean(), pparks[\"ACREAGE\"].median()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 265
+        },
+        "id": "4RsBpQyGFpBU",
+        "outputId": "510f8931-33e9-411d-a866-3a21fefdde19"
+      },
+      "execution_count": 229,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 432x288 with 1 Axes>"
+            ],
+            "image/png": "iVBORw0KGgoAAAANSUhEUgAAAXcAAAD4CAYAAAAXUaZHAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAADh0RVh0U29mdHdhcmUAbWF0cGxvdGxpYiB2ZXJzaW9uMy4yLjIsIGh0dHA6Ly9tYXRwbG90bGliLm9yZy+WH4yJAAARk0lEQVR4nO3dbYxm5V3H8e9Ptg/AKEtFJ7i7cYiSNsj6ABOkkjSzxSiVpsuLpqHBuq2YjRErKqal9QVvbKRRrJVok7Vg17hhRFqzpE+WbDshTQRlae3y0NoNXWBXulsD3TqVWFf/vphDMi6zzM65Z+6bue7vJ9nMfa5zzn39/8vym7PXnPtsqgpJUlu+b9QFSJJWn+EuSQ0y3CWpQYa7JDXIcJekBm0YdQEA5513Xk1NTfU697vf/S5nn3326ha0Dtj3+BnX3u371Pbv3//vVfVDS+17WYT71NQUDz30UK9z5+bmmJmZWd2C1gH7Hj/j2rt9n1qSJ0+1z2UZSWqQ4S5JDTLcJalBhrskNchwl6QGGe6S1CDDXZIatGy4J7kzybEkjyyx76YkleS8bjtJ/izJwSRfSXLJWhQtSXppp3Pl/jHgqpMHk2wBfgF4atHwm4ALu187gY8MXqIkaaWW/YRqVd2fZGqJXR8C3gPsXTS2HfjrWvgXQB5IsjHJ+VX1zGoUu5QDR47zzps/tVZv/5IO3Xr1SOaVpOX0evxAku3Akar6lySLd20Cnl60fbgbe1G4J9nJwtU9k5OTzM3N9SmFyTPhpq0nep07qL41r4b5+fmRzj8q49o3jG/v9t3PisM9yVnA+1lYkumtqnYBuwCmp6er77Mjbt+zl9sOjOYROYeumxnJvODzNsbRuPZu3/30ScUfAy4AXrhq3ww8nOQy4AiwZdGxm7sxSdIQrfhWyKo6UFU/XFVTVTXFwtLLJVX1TeBe4Fe6u2YuB46v5Xq7JGlpp3Mr5F3APwKvTXI4yfUvcfingSeAg8BfAr+xKlVKklbkdO6Wefsy+6cWvS7ghsHLkiQNwk+oSlKDDHdJapDhLkkNMtwlqUGGuyQ1yHCXpAYZ7pLUIMNdkhpkuEtSgwx3SWqQ4S5JDTLcJalBhrskNchwl6QGGe6S1CDDXZIaZLhLUoMMd0lqkOEuSQ0y3CWpQcuGe5I7kxxL8siisT9K8tUkX0ny90k2Ltr3viQHk3wtyS+uVeGSpFM7nSv3jwFXnTR2H3BxVf0k8K/A+wCSXARcC/xEd85fJDlj1aqVJJ2WZcO9qu4Hnj1p7HNVdaLbfADY3L3eDsxW1X9V1TeAg8Blq1ivJOk0rMaa+68Cn+lebwKeXrTvcDcmSRqiDYOcnOT3gRPAnh7n7gR2AkxOTjI3N9erhskz4aatJ5Y/cA30rXk1zM/Pj3T+URnXvmF8e7fvfnqHe5J3Am8Grqyq6oaPAFsWHba5G3uRqtoF7AKYnp6umZmZXnXcvmcvtx0Y6HtUb4eumxnJvLDwjaXv79l6Nq59w/j2bt/99FqWSXIV8B7gLVX1n4t23Qtcm+RVSS4ALgT+qXd1kqRelr3kTXIXMAOcl+QwcAsLd8e8CrgvCcADVfXrVfVokruBx1hYrrmhqv5nrYqXJC1t2XCvqrcvMXzHSxz/AeADgxQlSRqMn1CVpAYZ7pLUIMNdkhpkuEtSgwx3SWqQ4S5JDTLcJalBhrskNchwl6QGGe6S1CDDXZIaZLhLUoMMd0lqkOEuSQ0y3CWpQYa7JDXIcJekBhnuktQgw12SGmS4S1KDDHdJatCy4Z7kziTHkjyyaOw1Se5L8vXu67ndeJL8WZKDSb6S5JK1LF6StLTTuXL/GHDVSWM3A/uq6kJgX7cN8Cbgwu7XTuAjq1OmJGkllg33qrofePak4e3A7u71buCaReN/XQseADYmOX+1ipUknZ5U1fIHJVPAJ6vq4m7721W1sXsd4Lmq2pjkk8CtVfXFbt8+4L1V9dAS77mThat7JicnL52dne3VwLFnj3P0+V6nDmzrpnNGMzEwPz/PxMTEyOYflXHtG8a3d/s+tW3btu2vquml9m0YtICqqiTLf4d48Xm7gF0A09PTNTMz02v+2/fs5bYDA7fRy6HrZkYyL8Dc3Bx9f8/Ws3HtG8a3d/vup+/dMkdfWG7pvh7rxo8AWxYdt7kbkyQNUd9wvxfY0b3eAexdNP4r3V0zlwPHq+qZAWuUJK3QsusZSe4CZoDzkhwGbgFuBe5Ocj3wJPC27vBPA78EHAT+E3jXGtQsSVrGsuFeVW8/xa4rlzi2gBsGLUqSNBg/oSpJDTLcJalBhrskNchwl6QGGe6S1CDDXZIaZLhLUoMMd0lqkOEuSQ0y3CWpQYa7JDXIcJekBhnuktQgw12SGmS4S1KDDHdJapDhLkkNMtwlqUGGuyQ1yHCXpAYNFO5JfifJo0keSXJXklcnuSDJg0kOJvnbJK9crWIlSaend7gn2QT8FjBdVRcDZwDXAh8EPlRVPw48B1y/GoVKkk7foMsyG4Azk2wAzgKeAd4I3NPt3w1cM+AckqQVSlX1Pzm5EfgA8DzwOeBG4IHuqp0kW4DPdFf2J5+7E9gJMDk5eens7GyvGo49e5yjz/erf1BbN50zmomB+fl5JiYmRjb/qIxr3zC+vdv3qW3btm1/VU0vtW9D34mTnAtsBy4Avg38HXDV6Z5fVbuAXQDT09M1MzPTq47b9+zltgO92xjIoetmRjIvwNzcHH1/z9azce0bxrd3++5nkGWZnwe+UVXfqqr/Bj4BXAFs7JZpADYDRwaYQ5LUwyDh/hRweZKzkgS4EngM+ALw1u6YHcDewUqUJK1U73CvqgdZ+MHpw8CB7r12Ae8FfjfJQeAHgTtWoU5J0goMtFhdVbcAt5w0/ARw2SDvK0kajJ9QlaQGGe6S1CDDXZIaZLhLUoMMd0lqkOEuSQ0y3CWpQYa7JDXIcJekBhnuktQgw12SGmS4S1KDDHdJapDhLkkNMtwlqUGGuyQ1yHCXpAYZ7pLUIMNdkhpkuEtSgwx3SWrQQOGeZGOSe5J8NcnjSV6f5DVJ7kvy9e7ruatVrCTp9Ax65f5h4LNV9Trgp4DHgZuBfVV1IbCv25YkDVHvcE9yDvAG4A6AqvpeVX0b2A7s7g7bDVwzaJGSpJVJVfU7MflpYBfwGAtX7fuBG4EjVbWxOybAcy9sn3T+TmAnwOTk5KWzs7O96jj27HGOPt/r1IFt3XTOaCYG5ufnmZiYGNn8ozKufcP49m7fp7Zt27b9VTW91L5Bwn0aeAC4oqoeTPJh4DvAuxeHeZLnquol192np6froYce6lXH7Xv2ctuBDb3OXa8O3Xo1c3NzzMzMjLqUoRvXvmF8e7fvU0tyynAfZM39MHC4qh7stu8BLgGOJjm/m/h84NgAc0iSeugd7lX1TeDpJK/thq5kYYnmXmBHN7YD2DtQhZKkFRt0PePdwJ4krwSeAN7FwjeMu5NcDzwJvG3AOSRJKzRQuFfVl4Gl1nuuHOR9JUmD8ROqktQgw12SGmS4S1KDDHdJapDhLkkNMtwlqUGGuyQ1yHCXpAYZ7pLUIMNdkhpkuEtSgwx3SWqQ4S5JDTLcJalBhrskNchwl6QGGe6S1KBB/5k9jZmpmz81knkP3Xr1SOaV1iuv3CWpQYa7JDVo4HBPckaSLyX5ZLd9QZIHkxxM8rdJXjl4mZKklViNK/cbgccXbX8Q+FBV/TjwHHD9KswhSVqBgcI9yWbgauCj3XaANwL3dIfsBq4ZZA5J0sqlqvqfnNwD/CHw/cDvAe8EHuiu2kmyBfhMVV28xLk7gZ0Ak5OTl87Ozvaq4dizxzn6fK9T162tm85hfn6eiYmJoc994Mjxoc8JCz0DI+v75WBce7fvU9u2bdv+qppeal/vWyGTvBk4VlX7k8ys9Pyq2gXsApienq6ZmRW/BQC379nLbQfG647OQ9fNMDc3R9/fs0G8c1S3Ql43AzCyvl8OxrV3++5nkFS8AnhLkl8CXg38APBhYGOSDVV1AtgMHBlgDklSD73X3KvqfVW1uaqmgGuBz1fVdcAXgLd2h+0A9g5cpSRpRdZiPeO9wGySPwC+BNyxBnOMtambP8VNW0+MbIlE0svfqoR7Vc0Bc93rJ4DLVuN9JUn9+AlVSWqQ4S5JDTLcJalBhrskNWi8Pv2jdeuF58iP4i4hnyWv9cgrd0lqkFfu0jL816e0HnnlLkkNMtwlqUGGuyQ1yHCXpAYZ7pLUIMNdkhpkuEtSgwx3SWqQ4S5JDTLcJalBhrskNchwl6QG+eAw6WXq5AeWDetxxz6wrA29r9yTbEnyhSSPJXk0yY3d+GuS3Jfk693Xc1evXEnS6RhkWeYEcFNVXQRcDtyQ5CLgZmBfVV0I7Ou2JUlD1Dvcq+qZqnq4e/0fwOPAJmA7sLs7bDdwzaBFSpJWJlU1+JskU8D9wMXAU1W1sRsP8NwL2yedsxPYCTA5OXnp7Oxsr7mPPXuco8/3q3s9mzwT+x4zw+p966Zz1n6SFZifn2diYmLUZQzd6fS9bdu2/VU1vdS+gX+gmmQC+Djw21X1nYU8X1BVlWTJ7x5VtQvYBTA9PV0zMzO95r99z15uOzB+Pxe+aesJ+x4zw+r90HUzaz7HSszNzdE3H9azQfse6FbIJK9gIdj3VNUnuuGjSc7v9p8PHBtkDknSyg1yt0yAO4DHq+pPFu26F9jRvd4B7O1fniSpj0H+jncF8A7gQJIvd2PvB24F7k5yPfAk8LbBSpQkrVTvcK+qLwI5xe4r+76vJGlw4/mTKUkvSyd/KheG88ncFj+V67NlJKlBhrskNchlGUn/z1JLI1p/vHKXpAYZ7pLUIMNdkhpkuEtSgwx3SWqQd8tIGnujvENorT5A5ZW7JDXIcJekBhnuktQgw12SGmS4S1KDDHdJapDhLkkNMtwlqUGGuyQ1yHCXpAYZ7pLUoDUL9yRXJflakoNJbl6reSRJL7Ym4Z7kDODPgTcBFwFvT3LRWswlSXqxtbpyvww4WFVPVNX3gFlg+xrNJUk6Sapq9d80eStwVVX9Wrf9DuBnq+o3Fx2zE9jZbb4W+FrP6c4D/n2Actcr+x4/49q7fZ/aj1bVDy21Y2TPc6+qXcCuQd8nyUNVNb0KJa0r9j1+xrV3++5nrZZljgBbFm1v7sYkSUOwVuH+z8CFSS5I8krgWuDeNZpLknSSNVmWqaoTSX4T+AfgDODOqnp0LeZiFZZ21in7Hj/j2rt997AmP1CVJI2Wn1CVpAYZ7pLUoHUb7uP6eIMkW5J8IcljSR5NcuOoaxqmJGck+VKST466lmFJsjHJPUm+muTxJK8fdU3DkuR3uj/njyS5K8mrR13TWkhyZ5JjSR5ZNPaaJPcl+Xr39dyVvOe6DPcxf7zBCeCmqroIuBy4YYx6B7gReHzURQzZh4HPVtXrgJ9iTPpPsgn4LWC6qi5m4eaMa0db1Zr5GHDVSWM3A/uq6kJgX7d92tZluDPGjzeoqmeq6uHu9X+w8D/6ptFWNRxJNgNXAx8ddS3DkuQc4A3AHQBV9b2q+vZoqxqqDcCZSTYAZwH/NuJ61kRV3Q88e9LwdmB393o3cM1K3nO9hvsm4OlF24cZk4BbLMkU8DPAg6OtZGj+FHgP8L+jLmSILgC+BfxVtxz10SRnj7qoYaiqI8AfA08BzwDHq+pzo61qqCar6pnu9TeByZWcvF7DfewlmQA+Dvx2VX1n1PWstSRvBo5V1f5R1zJkG4BLgI9U1c8A32WFfz1fr7o15u0sfIP7EeDsJL882qpGoxbuWV/RfevrNdzH+vEGSV7BQrDvqapPjLqeIbkCeEuSQywsw70xyd+MtqShOAwcrqoX/nZ2DwthPw5+HvhGVX2rqv4b+ATwcyOuaZiOJjkfoPt6bCUnr9dwH9vHGyQJC+uvj1fVn4y6nmGpqvdV1eaqmmLhv/fnq6r5q7iq+ibwdJLXdkNXAo+NsKRhegq4PMlZ3Z/7KxmTHyZ37gV2dK93AHtXcvLIngo5iCE/3uDl5grgHcCBJF/uxt5fVZ8eYU1aW+8G9nQXMk8A7xpxPUNRVQ8muQd4mIW7xL5Eo48iSHIXMAOcl+QwcAtwK3B3kuuBJ4G3reg9ffyAJLVnvS7LSJJeguEuSQ0y3CWpQYa7JDXIcJekBhnuktQgw12SGvR/Jdo6MTGK0MUAAAAASUVORK5CYII=\n"
+          },
+          "metadata": {
+            "needs_background": "light"
+          }
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "ax = pparks.groupby(\"ACREAGE\")"
+      ],
+      "metadata": {
+        "id": "IUFhYgZpF17r"
+      },
+      "execution_count": 248,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Sometimes this happened to me, where a code I thought would create a visual didn't and other times it did. I must be doing something different to get a different result."
+      ],
+      "metadata": {
+        "id": "KJZvlaaiNRRO"
+      }
+    }
+  ]
+}
